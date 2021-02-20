@@ -33,7 +33,7 @@
           </a-form-model-item>
 
           <a-form-model-item label="角色分配" prop="orgId">
-            <a-select  mode="multiple" style="width: 100%" placeholder="请选择用户角色" @change="handleChange">
+            <a-select  mode="multiple" style="width: 100%" v-model="form.realname" placeholder="请选择用户角色" @change="handleChange">
               <a-select-option v-for="item in roleArr" :key="item.id">
                 {{ item.roleName }}
               </a-select-option>
@@ -41,8 +41,8 @@
           </a-form-model-item>
 
           <a-form-model-item label="性别" prop="sex">
-            <a-select style="width: 100%" placeholder="请选择性别" @change="sexChange">
-              <a-select-option v-for="item in sex" :key="item.sex">
+            <a-select style="width: 100%" v-model="form.sex" placeholder="请选择性别" @change="sexChange">
+              <a-select-option v-for="item in sex"  :key="item.sex">
                 {{ item.txt }}
               </a-select-option>
             </a-select>

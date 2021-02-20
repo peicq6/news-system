@@ -121,7 +121,14 @@ export default {
         {
           title: "性别",
           dataIndex: "sex",
-          sorter: true
+          sorter: true,
+          customRender: text => {
+            if (text === "1") {
+              return "男";
+            } else {
+              return "女";
+            }
+          }
         },
         {
           title: "电子邮箱",
@@ -134,7 +141,14 @@ export default {
         },
         {
           title: "状态",
-          dataIndex: "status"
+          dataIndex: "status",
+          customRender: text => {
+            if (text === 1) {
+              return "正常";
+            } else {
+              return "冻结";
+            }
+          }
         },
         {
           title: "创建时间",

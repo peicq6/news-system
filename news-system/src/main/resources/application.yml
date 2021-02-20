@@ -23,7 +23,7 @@ mvc:
       p6spy: true
 
 mybatis-plus:
-  mapper-locations: classpath:com/boot/module/system/modules/**/xml/*Mapper.xml
+  mapper-locations: classpath*:com/system/modules/**/xml/*Mapper.xml
 
 #enable swagger
 swagger:

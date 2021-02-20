@@ -137,7 +137,7 @@ public class LoginController {
      */
     private void generateUserInfo(SysUser sysUser, Result<JSONObject> result) {
 
-        // 生成token 123
+        // 生成token 12345
         String token = JwtUtil.sign(sysUser.getUsername(), sysUser.getPassword());
 
         // 设置token令牌缓存

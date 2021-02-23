@@ -110,13 +110,7 @@
 
 <script>
 
-
   import { mapActions } from "vuex"
-  import { timeFix } from "@/utils/util"
-  import Vue from 'vue'
-  import { ACCESS_TOKEN ,ENCRYPTED_STRING} from "@/store/mutation-types"
-  import { encryption , getEncryptedString } from '@/utils/encryption/aesEncrypt'
-
   import { getCaptcha } from '@/api/login'
   export default {
     components: {},
@@ -126,8 +120,6 @@
         loginBtn: false,
         // login type: 0 email, 1 username, 2 telephone
         loginType: 0,
-        requiredTwoStepCaptcha: false,
-        stepCaptchaVisible: false,
         form: this.$form.createForm(this),
         encryptedString:{
           key:"",
@@ -144,28 +136,18 @@
           captcha:{rule: [{ required: true, message: '请输入验证码!'}]},
           inputCode:{rules: [{ required: true, message: '请输入验证码!'}]}
         },
-        verifiedCode:"",
         inputCodeContent:"",
-        inputCodeNull:true,
-        currentUsername:"",
         currdatetime:'',
         randCodeImage:'',
         requestCodeSuccess:false,
       }
     },
-    created () {
-      this.currdatetime = new Date().getTime();
-      Vue.ls.remove(ACCESS_TOKEN)
-      this.getRouterData();
-      this.handleChangeCheckCode();
-      // update-begin- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
-      //this.getEncrypte();
-      // update-end- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
+    created() {
+      this.handleChangeCheckCode()
     },
     methods: {
-      ...mapActions(['Login', 'Logout', 'PhoneLogin']),
-      // handler
-
+      ...mapActions(['Login']),
+      //获取验证码
       handleChangeCheckCode() {
         this.currdatetime = new Date().getTime()
         getCaptcha(this.currdatetime).then(res => {
@@ -180,7 +162,7 @@
           this.requestCodeSuccess = false
         })
       },
-
+      //账号密码登陆
       handleSubmit() {
         let that = this
         let loginParams = {}
@@ -196,9 +178,10 @@
               loginParams.checkKey = that.currdatetime
               console.log('登录参数', loginParams)
               that.Login(loginParams).then((res) => {
-                this.$refs.loginSelect.show(res.result)
+                that.loginSuccess();
               }).catch((err) => {
                 that.requestFailed(err)
+
               })
             } else {
               that.loginBtn = false
@@ -212,8 +195,7 @@
               loginParams.captcha = values.captcha
               loginParams.remember_me = values.rememberMe
               that.PhoneLogin(loginParams).then((res) => {
-                console.log(res.result)
-                this.$refs.loginSelect.show(res.result)
+                that.loginSuccess();
               }).catch((err) => {
                 that.requestFailed(err)
               })
@@ -222,17 +204,38 @@
           })
         }
       },
+      //账号&手机号切换
+      handleTabClick (key) {
+        this.customActiveKey = key
+      },
+      //登陆成功跳转首页
+      loginSuccess (res) {
+        this.$router.push({ path: '/' })
+        // 延迟 1 秒显示欢迎信息
+        setTimeout(() => {
+          this.$message.success({ content: '登录成功！', key: 'login' })
+        }, 1000)
+        this.isLoginError = false
+      },
+      //登陆失败
+      requestFailed(err) {
+        this.$notification['error']({
+          message: '登录失败',
+          description: ((err.response || {}).data || {}).message || err.message || '请求出现错误，请稍后再试',
+          duration: 4
+        })
+        this.loginBtn = false
+        this.handleChangeCheckCode()
+      },
 
-
-
-
-
-
-
-
-
-
-
+      //验证
+      validateMobile(rule, value, callback) {
+        if (!value || new RegExp(/^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/).test(value)) {
+          callback()
+        } else {
+          callback('您的手机号码格式不正确!')
+        }
+      },
       handleUsernameOrEmail (rule, value, callback) {
         const regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
         if (regex.test(value)) {
@@ -242,129 +245,10 @@
         }
         callback()
       },
-      handleTabClick (key) {
-        this.customActiveKey = key
-        // this.form.resetFields()
-      },
-
-      getCaptcha(e) {
-        e.preventDefault()
-        let that = this
-        this.form.validateFields(['mobile'], { force: true }, (err, values) => {
-            if (!values.mobile) {
-              that.cmsFailed('请输入手机号')
-            } else if (!err) {
-              this.state.smsSendBtn = true
-              let interval = window.setInterval(() => {
-                if (that.state.time-- <= 0) {
-                  that.state.time = 60
-                  that.state.smsSendBtn = false
-                  window.clearInterval(interval)
-                }
-              }, 1000)
-
-              const hide = this.$message.loading('验证码发送中..', 0)
-              let smsParams = {}
-              smsParams.mobile = values.mobile
-              smsParams.smsmode = '0'
-              postAction('/sys/sms', smsParams)
-                .then(res => {
-                  if (!res.success) {
-                    setTimeout(hide, 0)
-                    this.cmsFailed(res.message)
-                  }
-                  console.log(res)
-                  setTimeout(hide, 500)
-                })
-                .catch(err => {
-                  setTimeout(hide, 1)
-                  clearInterval(interval)
-                  that.state.time = 60
-                  that.state.smsSendBtn = false
-                  this.requestFailed(err)
-                })
-            }
-          }
-        )
-      },
-      stepCaptchaSuccess() {
-        this.loginSuccess()
-      },
-      stepCaptchaCancel() {
-        this.Logout().then(() => {
-          this.loginBtn = false
-          this.stepCaptchaVisible = false
-        })
-      },
-
-      loginSuccess() {
-        this.$router.push({ path: '/dashboard/analysis' }).catch(() => {
-          console.log('登录跳转首页出错,这个错误从哪里来的')
-        })
-        this.$notification.success({
-          message: '欢迎',
-          description: `${timeFix()}，欢迎回来`
-        })
-      },
-      cmsFailed(err) {
-        this.$notification['error']({
-          message: '登录失败',
-          description: err,
-          duration: 4
-        })
-      },
-      requestFailed(err) {
-        this.$notification['error']({
-          message: '登录失败',
-          description: ((err.response || {}).data || {}).message || err.message || '请求出现错误，请稍后再试',
-          duration: 4
-        })
-        this.loginBtn = false
-      },
-      validateMobile(rule, value, callback) {
-        if (!value || new RegExp(/^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/).test(value)) {
-          callback()
-        } else {
-          callback('您的手机号码格式不正确!')
-        }
-
-      },
-      validateInputCode(rule, value, callback) {
-        if (!value || this.verifiedCode == this.inputCodeContent) {
-          callback()
-        } else {
-          callback('您输入的验证码不正确!')
-        }
-      },
-      generateCode(value) {
-        this.verifiedCode = value.toLowerCase()
-      },
       inputCodeChange(e) {
         this.inputCodeContent = e.target.value
       },
-      loginSelectOk() {
-        this.loginSuccess()
-      },
-      getRouterData() {
-        this.$nextTick(() => {
-          if (this.$route.params.username) {
-            this.form.setFieldsValue({
-              'username': this.$route.params.username
-            })
-          }
-        })
-      },
-      //获取密码加密规则
-      getEncrypte() {
-        var encryptedString = Vue.ls.get(ENCRYPTED_STRING)
-        if (encryptedString == null) {
-          getEncryptedString().then((data) => {
-            this.encryptedString = data
-          })
-        } else {
-          this.encryptedString = encryptedString
-        }
-      }
+
     }
   }
 </script>

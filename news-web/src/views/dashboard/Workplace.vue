@@ -116,7 +116,7 @@
   import PageLayout from '@/components/page/PageLayout'
   import HeadInfo from '@/components/tools/HeadInfo'
   import Radar from '@/components/chart/Radar'
-  import { getRoleList, getServiceList, getFileAccessHttpUrl } from "@/api/manage"
+
 
   const DataSet = require('@antv/data-set')
 

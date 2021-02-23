@@ -42,7 +42,7 @@
 
 <script>
   import { getAction,postAction } from '@/api/manage'
-  import { checkOnlyUser } from '@/api/api'
+
 
   export default {
     name: "Step1",

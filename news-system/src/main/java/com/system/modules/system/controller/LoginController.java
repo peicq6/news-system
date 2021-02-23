@@ -177,15 +177,9 @@ public class LoginController {
     public Result<Object> logout(HttpServletRequest request) {
         String token = request.getHeader(CommonConstant.X_ACCESS_TOKEN);
         if (StringUtils.isNotBlank(token)) {
-            String username = JwtUtil.getUsername(token);
-            if (StringUtils.isNotBlank(username)) {
-                SysUser sysUser = sysUserService.getUserByUsername(username);
-                if (sysUser != null) {
-                    redisUtil.del(CacheConstant.USER_TOKEN_CACHE + token);
-                    redisUtil.del(CacheConstant.USER_LOGIN_CACHE + token);
-                    SecurityUtils.getSubject().logout();
-                }
-            }
+            redisUtil.del(CacheConstant.USER_TOKEN_CACHE + token);
+            redisUtil.del(CacheConstant.USER_LOGIN_CACHE + token);
+            SecurityUtils.getSubject().logout();
         }
         return Result.ok("退出登录成功！");
     }

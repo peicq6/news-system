@@ -12,18 +12,17 @@ spring:
     timeout: 3000ms
 
   datasource:
+    dynamic:
+      p6spy: true
     username: root
     password: root
     url: jdbc:mysql://localhost:3306/news-boot?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-mvc:
-  datasource:
-    dynamic:
-      p6spy: true
+
 
 mybatis-plus:
-  mapper-locations: classpath*:com/system/modules/**/xml/*Mapper.xml
+  mapper-locations: classpath*:com/system/modules/**/xml/*.xml
 
 #enable swagger
 swagger:
@@ -32,8 +31,6 @@ swagger:
 #showSql
 logging:
   level:
-    com:
-      example:
-        mapper : debug
-
+    root : info
+    com.system.modules.**.mapper: debug
 

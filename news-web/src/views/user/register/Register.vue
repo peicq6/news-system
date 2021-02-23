@@ -38,7 +38,7 @@
       <a-form-item
         fieldDecoratorId="mobile"
         :fieldDecoratorOptions="{rules: [{ required: false}, { validator: this.handlePhoneCheck }]}">
-        <a-input size="large" placeholder="11 位手机号"> 
+        <a-input size="large" placeholder="11 位手机号">
           <a-select slot="addonBefore" size="large" defaultValue="+86">
             <a-select-option value="+86">+86</a-select-option>
             <a-select-option value="+87">+87</a-select-option>
@@ -92,9 +92,8 @@
 
 <script>
   import {mixinDevice} from '@/utils/mixin.js'
-  import {getSmsCaptcha} from '@/api/login'
   import {getAction, postAction} from '@/api/manage'
-  import {checkOnlyUser} from '@/api/api'
+
 
   const levelNames = {
     0: '低',

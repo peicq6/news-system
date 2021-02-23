@@ -1,4 +1,3 @@
-import * as api from '@/api/api'
 import { isURL } from '@/utils/validate'
 import onlineCommons from '@jeecg/antd-online-mini'
 

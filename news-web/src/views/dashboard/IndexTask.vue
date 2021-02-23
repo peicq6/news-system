@@ -140,7 +140,6 @@
 
 <script>
   import noDataPng from '@/assets/nodata.png'
-  import JEllipsis from '@/components/jeecg/JEllipsis'
 
   const tempSs1=[{
     id:"001",

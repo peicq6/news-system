@@ -13,10 +13,13 @@ import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisClusterManager;
 import org.crazycake.shiro.RedisManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.apache.shiro.mgt.SecurityManager;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.util.StringUtils;
 import redis.clients.jedis.HostAndPort;
@@ -38,6 +41,9 @@ public class ShiroConfig {
 
     @Resource
     LettuceConnectionFactory lettuceConnectionFactory;
+
+
+
 
     /**
      * @description: shiro拦截器
@@ -100,6 +106,7 @@ public class ShiroConfig {
      * @author peicq pcq@bjbjxing.com
      * @Date 2021/1/7 12:07
      */
+
     @Bean("securityManager")
     public DefaultWebSecurityManager securityManager(ShiroRealm shiroRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
@@ -198,4 +205,5 @@ public class ShiroConfig {
         }
         return manager;
     }
+
 }

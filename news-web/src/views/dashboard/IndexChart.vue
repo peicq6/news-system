@@ -148,7 +148,7 @@
   import HeadInfo from '@/components/tools/HeadInfo.vue'
 
   import Trend from '@/components/Trend'
-  import { getLoginfo,getVisitInfo } from '@/api/api'
+
 
   const rankList = []
   for (let i = 0; i < 7; i++) {

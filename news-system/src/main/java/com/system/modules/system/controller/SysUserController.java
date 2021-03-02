@@ -82,10 +82,6 @@ public class SysUserController {
                 result.error500("无此用户");
                 return result;
             }
-            if ("efd292c521bd11eb8dfdb0262880441f".equals(sysUser.getId()) && sysUser.getUsername().equals("admin")) {
-                result.error500("管理员账号不能删除");
-                return result;
-            }
             sysUserService.deleteUser(sysUser);
             result.success("删除成功");
         } catch (Exception e) {
